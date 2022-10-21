@@ -95,33 +95,7 @@ export class SWSEActorSheet extends ActorSheet {
         super.activateListeners(html);
 
 
-        html.find(".collapse-toggle").on("click", event => {
-            let down = "fa-minus";
-            let up = "fa-plus";
-            event.stopPropagation();
-            let button = $(event.currentTarget);
-
-            let children = button.find("i.fas");
-            children.each((i, e) =>{
-                if(e.classList.contains(down)){
-                    e.classList.remove(down);
-                    e.classList.add(up);
-                } else if(e.classList.contains(up)){
-                    e.classList.remove(up);
-                    e.classList.add(down);
-                }
-            })
-
-            let container = button.parents(".collapsible-container")
-            let collapsible = container.children(".collapsible")
-            collapsible.each((i, div) => {
-                if(div.style.display === "grid"){
-                    div.style.display = "none"
-                } else {
-                    div.style.display = "grid"
-                }
-            })
-        })
+        html.find(".collapse-toggle").on("click", this._onToggleCollapse.bind(this))
 
         // Everything below here is only needed if the sheet is editable
         if (!this.options.editable) return;
@@ -222,6 +196,42 @@ export class SWSEActorSheet extends ActorSheet {
             this.actor.darkSideScore = $(ev.currentTarget).data("value");
         });
 
+    }
+
+    _onToggleCollapse(event) {
+            let down = "fa-minus";
+            let up = "fa-plus";
+            event.stopPropagation();
+            let button = $(event.currentTarget);
+
+            let path = button.data('path')
+            let value = button.data('value')
+
+            let children = button.find("i.fas");
+            children.each((i, e) => {
+                if (e.classList.contains(down)) {
+                    e.classList.remove(down);
+                    e.classList.add(up);
+                } else if (e.classList.contains(up)) {
+                    e.classList.remove(up);
+                    e.classList.add(down);
+                }
+            })
+
+            let container = button.parents(".collapsible-container")
+            let collapsible = container.children(".collapsible")
+            collapsible.each((i, div) => {
+                if (div.style.display === "grid") {
+                    div.style.display = "none"
+                } else {
+                    div.style.display = "grid"
+                }
+            })
+            if (path) {
+                let data = {}
+                data[path] = !value;
+                this.actor.safeUpdate(data)
+            }
     }
 
     _onCreateNewItem(event){
