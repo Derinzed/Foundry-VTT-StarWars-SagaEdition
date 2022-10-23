@@ -2,6 +2,7 @@ import {resolveValueArray, toNumber} from "../util.js";
 import {getInheritableAttribute} from "../attribute-helper.js";
 import {generateArmorCheckPenalties} from "./armor-check-penalty.js";
 import {NEW_LINE} from "../constants.js";
+import {SWSEManualActorSheet} from "./manual-actor-sheet.js";
 
 
 /**
@@ -12,6 +13,8 @@ export function generateSkills(actor) {
     let data = {};
 
     let classSkills = actor._getClassSkills();
+
+    let isManualSheet = actor._sheet instanceof SWSEManualActorSheet
 
     let conditionBonus = getInheritableAttribute({
         entity: actor,
@@ -97,9 +100,12 @@ export function generateSkills(actor) {
         skill.value = resolveValueArray(nonZeroBonuses.map(bonus => bonus.value));
         skill.key = key;
         skill.variable = `@${actor.cleanSkillName(key)}`;
+        skill.manualVariable = `@Manual${actor.cleanSkillName(key)}`;
         actor.resolvedVariables.set(`@${actor.cleanSkillName(key)}`, "1d20 + " + skill.value);
+        actor.resolvedVariables.set(`@Manual${actor.cleanSkillName(key)}`, "1d20 + " + skill.manual);
         skill.label = key.titleCase().replace("Knowledge", "K.");
         actor.resolvedLabels.set(`@${actor.cleanSkillName(key)}`, skill.label);
+        actor.resolvedLabels.set(`@Manual${actor.cleanSkillName(key)}`, skill.label);
 
         skill.notes = []
         for (let reroll of applicableRerolls) {
@@ -107,7 +113,7 @@ export function generateSkills(actor) {
         }
         actor.resolvedNotes.set(`@${actor.cleanSkillName(key)}`, skill.notes)
 
-        if (classSkills.size === 0 && skill.trained) {
+        if (classSkills.size === 0 && skill.trained && !isManualSheet) {
             data[`data.skills.${key}.trained`] = false;
         }
 
