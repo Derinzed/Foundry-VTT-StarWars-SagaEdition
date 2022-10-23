@@ -3,8 +3,8 @@
 <div class="defense">
     <div class="defense-label plain input static flex flex-row"><div>{{toTitleCase def.name}}</div>
         {{#if def.defenseModifiers}}
-            <div class="collapse-toggle flex-float-right"><h3 class="plain input"><a data-action="hide"><i
-                    class="fas fa-plus"></i></a></h3></div>
+            <div class="collapse-toggle flex-float-right" data-path="system.defense.{{path}}{{toLowerCase def.name}}.expanded" data-value="{{def.expanded}}"><h3 class="plain input"><a data-action="hide"><i
+                    class="fas {{#if def.expanded}}fa-minus{{else}}fa-plus{{/if}}"></i></a></h3></div>
         {{/if}}
     </div>
     <div class="defense-total plain input static"><h2>{{def.total}}</h2></div>
@@ -14,10 +14,10 @@
     <div class="defense-class plain input static">{{def.classBonus}}</div>
     <div class="defense-misc plain input static" title="{{def.miscBonusTip}}">{{def.miscBonus}}</div>
 </div>
-<div class="collapsible" style="display: none">
+<div class="collapsible" style="{{#if def.expanded}}display: grid {{else}}display: none{{/if}}">
 {{#if def.defenseModifiers}}
     {{#each def.defenseModifiers as |defenseModifier id|}}
-    {{> 'systems/swse/templates/actor/parts/actor-defense-block.hbs'def=defenseModifier}}
+    {{> 'systems/swse/templates/actor/parts/actor-defense-block.hbs'def=defenseModifier path=(concat (toLowerCase ../def.name) '.defenseModifiers.')}}
     {{/each}}
 {{/if}}
 </div>
