@@ -14,7 +14,7 @@ export function resolveHealth(actor) {
     let system = actor.system;
     let ignoreCon = actor.ignoreCon();
     let healthBonuses = [];
-    for (let charClass of actor.classes || []) {
+    for (let charClass of actor.system.classes || []) {
         healthBonuses.push(charClass.classLevelHealth)
         healthBonuses.push(resolveAttributeMod(actor, ignoreCon));
     }

@@ -11,8 +11,8 @@ export function generateAttributes(actor) {
     let system = actor.system;
 
     system.lockAttributes = actor.shouldLockAttributes
-    system.isBeast = actor.classes?.filter(clazz => clazz.name === "Beast").length > 0
-    let attributeGenType = actor.system.finalAttributeGenerationType;
+    system.isBeast = system.classes?.filter(clazz => clazz.name === "Beast").length > 0
+    let attributeGenType = system.finalAttributeGenerationType;
 
     let data = {};
 

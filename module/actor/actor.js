@@ -403,7 +403,8 @@ export class SWSEActor extends Actor {
 
         generateSpeciesData(this);
 
-        this.classes = filterItemsByType(this.items.values(), "class");
+        this.classes = []
+        this.system.classes = filterItemsByType(this.items.values(), "class");
 
         this.traits = this.getTraits();
         this.talents = this.getTalents();
@@ -422,7 +423,7 @@ export class SWSEActor extends Actor {
         this.speciesTypes = filterItemsByType(this.items.values(), "beastType");
         this.specialQualities = filterItemsByType(this.items.values(), "beastQuality");
 
-        this.isBeast = !!this.classes.find(c => c.name === "Beast") || this.naturalWeapons.length > 0
+        this.isBeast = !!this.system.classes.find(c => c.name === "Beast") || this.naturalWeapons.length > 0
             || this.specialSenses.length > 0
             || this.speciesTypes.length > 0
             || this.specialQualities.length > 0;
@@ -883,8 +884,8 @@ export class SWSEActor extends Actor {
     }
 
     get characterLevel() {
-        if (this.classes) {
-            let charLevel = this.classes.length;
+        if (this.system.classes) {
+            let charLevel = this.system.classes.length;
             this.resolvedVariables.set("@charLevel", charLevel);
             return charLevel;
         }
@@ -892,8 +893,8 @@ export class SWSEActor extends Actor {
     }
 
     get heroicLevel() {
-        if (this.classes) {
-            let heroicLevel = this.classes.filter(c => getInheritableAttribute({
+        if (this.system.classes) {
+            let heroicLevel = this.system.classes.filter(c => getInheritableAttribute({
                 entity: c,
                 attributeKey: "isHeroic",
                 reduce: "OR"
@@ -978,7 +979,7 @@ export class SWSEActor extends Actor {
     _generateClassData() {
         let classLevels = {};
 
-        for (let characterClass of this.classes) {
+        for (let characterClass of this.system.classes) {
             if (!classLevels[characterClass.name]) {
                 classLevels[characterClass.name] = 0;
             }
@@ -987,7 +988,7 @@ export class SWSEActor extends Actor {
 
         let classSummary = Object.entries(classLevels).map((entity) => `${entity[0]} ${entity[1]}`).join(' / ');
 
-        return {level: this.classes.length, classSummary, classLevels};
+        return {level: this.system.classes.length, classSummary, classLevels};
     }
 
     handleLeveBasedAttributeBonuses(system) {
@@ -997,9 +998,9 @@ export class SWSEActor extends Actor {
             attributeKey: "isHeroic",
             reduce: "OR"
         });
-        let characterLevel = this.classes.length;
+        let characterLevel = this.system.classes.length;
         if (characterLevel > 0) {
-            this.classes[characterLevel - 1].system.isLatest = true;
+            this.system.classes[characterLevel - 1].system.isLatest = true;
         }
 
         let hasUpdate = false;
@@ -1262,15 +1263,13 @@ export class SWSEActor extends Actor {
             .map(i => i.finalName)
             .includes(item.finalName);
     }
-    _reduceProvidedItemsByExistingItems(actorData) {
 
+    _reduceProvidedItemsByExistingItems(actorData) {
         let provides = getInheritableAttribute({
             entity: this,
             attributeKey: "provides"
         });
         this.system.availableItems = {}; //TODO maybe allow for a link here that opens the correct compendium and searches for you
-        this.system.bonuses = {};
-        this.system.activeFeatures = [];
         let dynamicGroups = {};
 
         for (let provided of provides) {
@@ -1295,7 +1294,7 @@ export class SWSEActor extends Actor {
             this.system.availableItems[key] = this.system.availableItems[key] ? this.system.availableItems[key] + value : value;
         }
 
-        let classLevel = this.classes?.length;
+        let classLevel = this.system.classes?.length;
         this.system.availableItems['General Feats'] = 1 + Math.floor(classLevel / 3) + (this.system.availableItems['General Feats'] ? this.system.availableItems['General Feats'] : 0);
 
 
@@ -1909,10 +1908,10 @@ export class SWSEActor extends Actor {
             }
 
             if(entity.type === "class"){
-                context.isFirstLevel = this.classes.length === 0;
+                context.isFirstLevel = this.system.classes.length === 0;
                 if(!context.skipPrerequisite && !context.isUpload){
 
-                    if (entity.name === "Beast" && !context.isFirstLevel && this.classes.filter(clazz => clazz.name === "Beast").length === 0) {
+                    if (entity.name === "Beast" && !context.isFirstLevel && this.system.classes.filter(clazz => clazz.name === "Beast").length === 0) {
                         new Dialog({
                             title: "The Beast class is not allowed at this time",
                             content: `The Beast class is only allowed to be taken at first level or if it has been taken in a previous level`,
@@ -1925,7 +1924,7 @@ export class SWSEActor extends Actor {
                         }).render(true);
                         return [];
                     }
-                    if (entity.name !== "Beast" && this.classes.filter(clazz => clazz.name === "Beast").length > 0 && this.getAttribute("INT") < 3) {
+                    if (entity.name !== "Beast" && this.system.classes.filter(clazz => clazz.name === "Beast").length > 0 && this.getAttribute("INT") < 3) {
                         new Dialog({
                             title: "The Beast class is not allowed to multiclass at this time",
                             content: `Beasts can only multiclass when they have an Intelligence higher than 2.`,

@@ -1,5 +1,10 @@
 import {getInheritableAttribute} from "../attribute-helper.js";
 
+/**
+ *
+ * @param actor {SWSEActor}
+ * @returns {*[]}
+ */
 export function warningsFromActor(actor) {
     let warnings = [];
 
@@ -21,7 +26,7 @@ export function warningsFromActor(actor) {
     if(!actor.species){
         warnings.push(`<span data-action="compendium" data-type="Item" data-filter="-type:species">Please Select a Species</span>`)
     }
-    if(!actor.classes){
+    if(!actor.system.classes){
         warnings.push(`<span>Please Select a Class</span>`)
     }
     if(actor.remainingSkills){
