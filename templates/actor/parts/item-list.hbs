@@ -6,6 +6,11 @@
         {{#if createNew}}
             <a class="fas fa-plus" data-action="create" data-action-type="{{createNew}}" title="add new {{createNew}}"></a>
         {{/if}}
+        {{#if compendiumFilter}}
+            <a data-action="compendium" data-type="Item" data-filter="{{compendiumFilter}}"
+                                   title="{{localize "Open Compendium"}}"><i
+                class="fas fa-folder-plus"></i></a>
+        {{/if}}
     </div>
     {{#if quickCreate}}
     <div class="search-row">

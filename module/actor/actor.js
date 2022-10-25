@@ -403,7 +403,6 @@ export class SWSEActor extends Actor {
 
         generateSpeciesData(this);
 
-        this.classes = []
         this.system.classes = filterItemsByType(this.items.values(), "class");
 
         this.traits = this.getTraits();
@@ -416,8 +415,8 @@ export class SWSEActor extends Actor {
         this.destiny = (destinies.length > 0 ? destinies[0] : null);
         this.secrets = filterItemsByType(this.items.values(), "forceSecret");
         this.techniques = filterItemsByType(this.items.values(), "forceTechnique");
-        this.affiliations = filterItemsByType(this.items.values(), "affiliation");
-        this.regimens = filterItemsByType(this.items.values(), "forceRegimen");
+        this.system.affiliations = filterItemsByType(this.items.values(), "affiliation");
+        this.system.regimens = filterItemsByType(this.items.values(), "forceRegimen");
         this.naturalWeapons = filterItemsByType(this.items.values(), "beastAttack");
         this.specialSenses = filterItemsByType(this.items.values(), "beastSense");
         this.speciesTypes = filterItemsByType(this.items.values(), "beastType");

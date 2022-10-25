@@ -72,7 +72,6 @@ Hooks.once('init', async function () {
         'systems/swse/templates/actor/manual/parts/actor-ability-scores.hbs',
         'systems/swse/templates/actor/manual/parts/actor-health.hbs',
         'systems/swse/templates/actor/manual/parts/actor-shields.hbs',
-        'systems/swse/templates/actor/parts/actor-affiliations.hbs',
         'systems/swse/templates/actor/parts/actor-classes.hbs',
         'systems/swse/templates/actor/parts/actor-summary.hbs',
         'systems/swse/templates/actor/parts/actor-weapon-armor-summary.hbs',

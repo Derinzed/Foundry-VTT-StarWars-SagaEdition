@@ -251,27 +251,13 @@
                         {{/each}}
                     </ol>
                     <br/>
-                    <div>
-                        <h2><label class="resource-label">Force Regimens <a data-action="compendium" data-type="Item" data-filter="-type:forceRegimen"
-                                                                            title="{{localize "Open Compendium"}}"><i
-                                class="fas fa-folder-plus"></i></a></label></h2>
-                    </div>
-                    <ol class="items-list">
-                        {{#each actor.regimens as |item id|}}
-                            <li class="item flexrow" data-item-id="{{item._id}}">
-                                <h4 class="item-name"><b>{{item.name}}</b></h4>
-                                <h4 class="item-name"><b>Prerequisites:</b> {{item.prerequisites}}</h4>
-                                <div class="item-controls">
-                                    <a data-action="view" class="item-control" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                                </div>
-                            </li>
-                        {{/each}}
-                    </ol>
+
+                    {{> 'systems/swse/templates/actor/parts/item-list.hbs' container="force-regimens" label="Force Regimens" items=actor.system.regimens draggable=false quantity=false delete="always" compendiumFilter="-type:forceRegimen"}}
+
                 </div>
 
                 <div class="tab affiliations" data-group="primary" data-tab="affiliations">
-                    {{> 'systems/swse/templates/actor/parts/actor-affiliations.hbs'}}
+                    {{> 'systems/swse/templates/actor/parts/item-list.hbs' container="affiliations" label="Affiliations" items=actor.system.affiliations draggable=false quantity=false delete="always" compendiumFilter="-type:affiliation"}}
                 </div>
 
                 <div class="tab settings" data-group="primary" data-tab="settings">
