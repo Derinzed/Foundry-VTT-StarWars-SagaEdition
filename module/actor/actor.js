@@ -439,14 +439,13 @@ export class SWSEActor extends Actor {
         this.handleDarksideArray(this);
 
         resolveOffense(this);
-        let {activeFeats, removeFeats, inactiveProvidedFeats} = this.resolveFeats();
+        let {activeFeats, inactiveProvidedFeats} = this.resolveFeats();
         system.feats = activeFeats;
         system.inactiveProvidedFeats = inactiveProvidedFeats
         generateSkills(this);
 
 
-        let remainingSkills = getAvailableTrainedSkillCount(this);
-        remainingSkills = remainingSkills - this.trainedSkills.length;
+        let remainingSkills = getAvailableTrainedSkillCount(this) - this.trainedSkills.length;
         this.system.remainingSkills = remainingSkills < 0 ? false : remainingSkills;
         this.system.tooManySKills = remainingSkills < 0 ? Math.abs(remainingSkills) : false;
 

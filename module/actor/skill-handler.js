@@ -3,6 +3,7 @@ import {getInheritableAttribute} from "../attribute-helper.js";
 import {generateArmorCheckPenalties} from "./armor-check-penalty.js";
 import {NEW_LINE} from "../constants.js";
 import {SWSEManualActorSheet} from "./manual-actor-sheet.js";
+import {SWSEActor} from "./actor.js";
 
 
 /**
