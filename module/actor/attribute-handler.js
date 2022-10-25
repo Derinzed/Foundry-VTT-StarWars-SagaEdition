@@ -1,6 +1,6 @@
 import {getLongKey, resolveValueArray, toNumber} from "../util.js";
 import {getInheritableAttribute} from "../attribute-helper.js";
-
+import {SWSEActor} from "./actor.js";
 
 
 /**
@@ -112,7 +112,7 @@ export function generateAttributes(actor) {
     }
 
 
-    if(Object.values(data).length > 0 && !actor.pack && !actor.flags.core?.sourceId.includes(actor._id)){
+    if(Object.values(data).length > 0 && !actor.pack && !actor.flags.core?.sourceId?.includes(actor._id)){
         if(actor._id){
             actor.safeUpdate(data);
         }

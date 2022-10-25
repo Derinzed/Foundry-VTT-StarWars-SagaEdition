@@ -1,4 +1,5 @@
 import {getInheritableAttribute} from "../attribute-helper.js";
+import {SWSEActor} from "./actor.js";
 
 /**
  *

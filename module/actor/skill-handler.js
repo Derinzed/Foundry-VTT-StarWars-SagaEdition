@@ -99,19 +99,19 @@ export function generateSkills(actor) {
         skill.title = nonZeroBonuses.map(bonus => bonus.description).join(NEW_LINE);
         skill.value = resolveValueArray(nonZeroBonuses.map(bonus => bonus.value));
         skill.key = key;
-        skill.variable = `@${actor.cleanSkillName(key)}`;
-        skill.manualVariable = `@Manual${actor.cleanSkillName(key)}`;
-        actor.resolvedVariables.set(`@${actor.cleanSkillName(key)}`, "1d20 + " + skill.value);
-        actor.resolvedVariables.set(`@Manual${actor.cleanSkillName(key)}`, "1d20 + " + skill.manual);
+        skill.variable = `@${cleanSkillName(key)}`;
+        skill.manualVariable = `@Manual${cleanSkillName(key)}`;
+        actor.resolvedVariables.set(`@${cleanSkillName(key)}`, "1d20 + " + skill.value);
+        actor.resolvedVariables.set(`@Manual${cleanSkillName(key)}`, "1d20 + " + skill.manual);
         skill.label = key.titleCase().replace("Knowledge", "K.");
-        actor.resolvedLabels.set(`@${actor.cleanSkillName(key)}`, skill.label);
-        actor.resolvedLabels.set(`@Manual${actor.cleanSkillName(key)}`, skill.label);
+        actor.resolvedLabels.set(`@${cleanSkillName(key)}`, skill.label);
+        actor.resolvedLabels.set(`@Manual${cleanSkillName(key)}`, skill.label);
 
         skill.notes = []
         for (let reroll of applicableRerolls) {
             skill.notes.push(`[[/roll 1d20 + ${skill.value}]] ${reroll.sourceDescription}`)
         }
-        actor.resolvedNotes.set(`@${actor.cleanSkillName(key)}`, skill.notes)
+        actor.resolvedNotes.set(`@${cleanSkillName(key)}`, skill.notes)
 
         if (classSkills.size === 0 && skill.trained && !isManualSheet) {
             data[`data.skills.${key}.trained`] = false;
@@ -124,6 +124,12 @@ export function generateSkills(actor) {
     if (Object.values(data).length > 0 && !!actor._id && !actor.pack && game.actors.get(actor._id)) {
         actor.safeUpdate(data);
     }
+}
+
+
+
+function cleanSkillName(key) {
+    return key.titleCase().replace("Knowledge ", "K").replace("(", "").replace(")", "").replace(" ", "").replace(" ", "")
 }
 
 /**

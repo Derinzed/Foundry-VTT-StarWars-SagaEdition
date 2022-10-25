@@ -1,7 +1,6 @@
 import {resolveHealth, resolveShield} from "./health.js";
 import {generateAttacks, generateVehicleAttacks} from "./attack-handler.js";
 import {resolveGrapple, resolveOffense} from "./offense.js";
-import {generateSpeciesData} from "./species.js";
 import {
     excludeItemsByType,
     filterItemsByType,
@@ -170,7 +169,7 @@ export class SWSEActor extends Actor {
         this.gunnerPositions = this.getGunnerPositions()
         this.cargo = filterItemsByType(this.items.values(), ["weapon", "armor", "equipment"])
             .filter(item => !item.system.hasItemOwner);
-        this.traits = this.getTraits();
+        this.system.traits = this.getTraits();
 
         this.system.attributeGenerationType = "Manual"
         this.system.disableAttributeGenerationChange = true;
@@ -399,33 +398,31 @@ export class SWSEActor extends Actor {
      */
     _prepareCharacterData(system) {
         let speciesList = filterItemsByType(this.items.values(), "species");
-        this.species = (speciesList.length > 0 ? speciesList[0] : null);
+        system.species = (speciesList.length > 0 ? speciesList[0] : null);
 
-        generateSpeciesData(this);
+        system.classes = filterItemsByType(this.items.values(), "class");
 
-        this.system.classes = filterItemsByType(this.items.values(), "class");
-
-        this.traits = this.getTraits();
-        this.talents = this.getTalents();
-        this.powers = filterItemsByType(this.items.values(), "forcePower");
-        this.languages = filterItemsByType(this.items.values(), "language");
+        system.traits = this.getTraits();
+        system.talents = this.getTalents();
+        system.powers = filterItemsByType(this.items.values(), "forcePower");
+        system.languages = filterItemsByType(this.items.values(), "language");
         let backgrounds = filterItemsByType(this.items.values(), "background");
-        this.background = (backgrounds.length > 0 ? backgrounds[0] : null);
+        system.background = (backgrounds.length > 0 ? backgrounds[0] : null);
         let destinies = filterItemsByType(this.items.values(), "destiny");
-        this.destiny = (destinies.length > 0 ? destinies[0] : null);
-        this.secrets = filterItemsByType(this.items.values(), "forceSecret");
-        this.techniques = filterItemsByType(this.items.values(), "forceTechnique");
-        this.system.affiliations = filterItemsByType(this.items.values(), "affiliation");
-        this.system.regimens = filterItemsByType(this.items.values(), "forceRegimen");
-        this.naturalWeapons = filterItemsByType(this.items.values(), "beastAttack");
-        this.specialSenses = filterItemsByType(this.items.values(), "beastSense");
-        this.speciesTypes = filterItemsByType(this.items.values(), "beastType");
-        this.specialQualities = filterItemsByType(this.items.values(), "beastQuality");
+        system.destiny = (destinies.length > 0 ? destinies[0] : null);
+        system.secrets = filterItemsByType(this.items.values(), "forceSecret");
+        system.techniques = filterItemsByType(this.items.values(), "forceTechnique");
+        system.affiliations = filterItemsByType(this.items.values(), "affiliation");
+        system.regimens = filterItemsByType(this.items.values(), "forceRegimen");
+        system.naturalWeapons = filterItemsByType(this.items.values(), "beastAttack");
+        system.specialSenses = filterItemsByType(this.items.values(), "beastSense");
+        system.speciesTypes = filterItemsByType(this.items.values(), "beastType");
+        system.specialQualities = filterItemsByType(this.items.values(), "beastQuality");
 
-        this.isBeast = !!this.system.classes.find(c => c.name === "Beast") || this.naturalWeapons.length > 0
-            || this.specialSenses.length > 0
-            || this.speciesTypes.length > 0
-            || this.specialQualities.length > 0;
+        system.isBeast = !!system.classes.find(c => c.name === "Beast") || system.naturalWeapons.length > 0
+            || system.specialSenses.length > 0
+            || system.speciesTypes.length > 0
+            || system.specialQualities.length > 0;
 
         let {level, classSummary, classLevels} = this._generateClassData(system);
         system.levelSummary = level;
@@ -433,25 +430,25 @@ export class SWSEActor extends Actor {
         system.classLevels = classLevels;
 
 
-        this.equipped = this.getEquippedItems();
-        this.unequipped = this.getUnequippedItems();
-        this.inventory = this.getNonequippableItems();
+        system.equipped = this.getEquippedItems();
+        system.unequipped = this.getUnequippedItems();
+        system.inventory = this.getNonequippableItems();
 
         generateAttributes(this);
 
         this.handleDarksideArray(this);
 
         resolveOffense(this);
-        let feats = this.resolveFeats();
-        this.feats = feats.activeFeats;
-        this.system.feats = feats.activeFeats;
+        let {activeFeats, removeFeats, inactiveProvidedFeats} = this.resolveFeats();
+        system.feats = activeFeats;
+        system.inactiveProvidedFeats = inactiveProvidedFeats
         generateSkills(this);
 
 
         let remainingSkills = getAvailableTrainedSkillCount(this);
         remainingSkills = remainingSkills - this.trainedSkills.length;
-        this.remainingSkills = remainingSkills < 0 ? false : remainingSkills;
-        this.tooManySKills = remainingSkills < 0 ? Math.abs(remainingSkills) : false;
+        this.system.remainingSkills = remainingSkills < 0 ? false : remainingSkills;
+        this.system.tooManySKills = remainingSkills < 0 ? Math.abs(remainingSkills) : false;
 
         this.isHeroic = getInheritableAttribute({
             entity: this,
@@ -462,7 +459,6 @@ export class SWSEActor extends Actor {
 
         system.hideForce = 0 === this.feats.filter(feat => feat.name === 'Force Training').length
 
-        system.inactiveProvidedFeats = feats.inactiveProvidedFeats
 
         this._reduceProvidedItemsByExistingItems(system);
 
@@ -1340,10 +1336,6 @@ export class SWSEActor extends Actor {
         if (actorData.availableItems[type] === 0) {
             delete actorData.availableItems[type];
         }
-    }
-
-    cleanSkillName(key) {
-        return this._uppercaseFirstLetters(key).replace("Knowledge ", "K").replace("(", "").replace(")", "").replace(" ", "").replace(" ", "")
     }
 
 
